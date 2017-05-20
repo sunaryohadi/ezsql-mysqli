@@ -14,10 +14,10 @@
 	*  ezSQL Constants
 	*/
 
-	define('EZSQL_VERSION','2.17');
-	define('OBJECT','OBJECT',true);
-	define('ARRAY_A','ARRAY_A',true);
-	define('ARRAY_N','ARRAY_N',true);
+	defined('EZSQL_VERSION') or define('EZSQL_VERSION', '2.17');
+	defined('OBJECT') or define('OBJECT', 'OBJECT');
+	defined('ARRAY_A') or define('ARRAY_A', 'ARRAY_A');
+	defined('ARRAY_N') or define('ARRAY_N', 'ARRAY_N');
 
 	/**********************************************************************
 	*  Core class containg common functions to manipulate query result
@@ -33,7 +33,7 @@
 		var $vardump_called   = false;
 		var $show_errors      = true;
 		var $num_queries      = 0;
-		var $conn_queries     = 0;		
+		var $conn_queries     = 0;
 		var $last_query       = null;
 		var $last_error       = null;
 		var $col_info         = null;
@@ -204,7 +204,8 @@
 			}
 
 			// Extract the column values
-			for ( $i=0; $i < count($this->last_result); $i++ )
+			$j = count($this->last_result);
+			for ( $i=0; $i < $j; $i++ )
 			{
 				$new_array[$i] = $this->get_var(null,$x,$i);
 			}
@@ -464,7 +465,7 @@
 				echo "<tr bgcolor=eeeeee><td nowrap valign=bottom><font color=555599 face=arial size=2><b>(row)</b></font></td>";
 
 
-				for ( $i=0; $i < count($this->col_info); $i++ )
+				for ( $i=0, $j=count($this->col_info); $i < $j; $i++ )
 				{
 					/* when selecting count(*) the maxlengh is not set, size is set instead. */
 					echo "<td nowrap align=left valign=top><font size=1 color=555599 face=arial>{$this->col_info[$i]->type}";
@@ -635,5 +636,4 @@
 
 			return ($all) ? $this->num_queries : $this->conn_queries;
 		}
-
 	}
