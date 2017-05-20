@@ -1,7 +1,7 @@
 <?php
 
 /**********************************************************************
-*  Author: Juergen Bouché (jbouche@nurfuerspam.de). Modified by Sunaryo Hadi
+*  Author: Juergen Bouché (jbouche@nurfuerspam.de). Slightly modified by Sunaryo Hadi
 *  Web...: http://www.juergenbouche.de
 *  Name..: ezSQL_mysqli
 *  Desc..: mySQLi component (part of ezSQL database abstraction library)
@@ -11,7 +11,7 @@
 /**********************************************************************
 *  ezSQL error strings - mySQLi
 */
-  
+
 global $ezsql_mysqli_str;
 
 $ezsql_mysqli_str = array
@@ -161,7 +161,7 @@ class ezSQL_mysqli extends ezSQLcore
 					$charsets[] = $row["Charset"];
 				}
 				if(in_array($encoding,$charsets)){
-					$this->dbh->query("SET NAMES '".$encoding."'");						
+					$this->dbh->set_charset($encoding);
 				}
 			}
 			
@@ -184,8 +184,12 @@ class ezSQL_mysqli extends ezSQLcore
 			$this->connect($this->dbuser, $this->dbpassword, $this->dbhost, $this->dbport);
 			$this->select($this->dbname, $this->encoding);
 		}
+					
+		if ( get_magic_quotes_gpc() ) {
+			$str = stripslashes($str);
+		}                        
 
-		return $this->dbh->escape_string(stripslashes($str));
+		return $this->dbh->escape_string($str);
 	}
 
 	/**********************************************************************
@@ -206,7 +210,7 @@ class ezSQL_mysqli extends ezSQLcore
 	{
 
 		// This keeps the connection alive for very long running scripts
-		if ( $this->num_queries >= 500 )
+		if ( $this->count(false) >= 500 )
 		{
 			$this->disconnect();
 			$this->quick_connect($this->dbuser,$this->dbpassword,$this->dbname,$this->dbhost,$this->dbport,$this->encoding);
@@ -229,7 +233,7 @@ class ezSQL_mysqli extends ezSQLcore
 
 		// Count how many queries there have been
 		$this->count(true, true);
-
+		
 		// Start timer
 		$this->timer_start($this->num_queries);
 
@@ -269,8 +273,8 @@ class ezSQL_mysqli extends ezSQLcore
 			return false;
 		}
 
-		// Query was an insert, delete, update, replace
-		if ( preg_match("/^(insert|delete|update|replace|truncate|drop|create|alter|begin|commit|rollback|set|lock|unlock|call)/i",$query) )
+		// Query was a Data Manipulation Query (insert, delete, update, replace, ...)
+		if ( !is_object($this->result) )
 		{
 			$is_insert = true;
 			$this->rows_affected = @$this->dbh->affected_rows;
@@ -284,7 +288,7 @@ class ezSQL_mysqli extends ezSQLcore
 			// Return number fo rows affected
 			$return_val = $this->rows_affected;
 		}
-		// Query was a select
+		// Query was a Data Query Query (select, show, ...)
 		else
 		{
 			$is_insert = false;
