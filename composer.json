@@ -1,7 +1,7 @@
 {
 	"name": "sunaryohadi/ezsql-mysqli",
 	"description": "Fork ezSQL, just for mysqli. With additional prepare() function from WPdb",
-	"license": "LGPL",
+	"license": "LGPL-2.0-or-later",
 	"authors": [
 		{
 			"name": "Justin Vincent",
